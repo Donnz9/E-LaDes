@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.ELayang.Desa" >
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.C2D_MESSAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:enableOnBackInvokedCallback="true"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/logo_aplikasi"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/logo_aplikasi_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.ELades"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31"
+        android:requestLegacyExternalStorage="true">
+        <activity
+            android:name=".Menu.ganti_password"
+            android:exported="false" />
+        <activity
+            android:name=".Surat.Surat_Kematian"
+            android:exported="false" /> <!-- Perbaiki typo pada nama channel -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="prayoga" /> <!-- Perbaiki typo pada nama service -->
+        <service
+            android:name=".Asset.Notifikasi.NotificationService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" >
+            <intent-filter>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+            </intent-filter>
+        </service>
+
+        <activity
+            android:name=".Menu.edit_profil"
+            android:exported="false" />
+        <activity
+            android:name=".Asset.imagePagerAdapter"
+            android:exported="false"
+            tools:ignore="Instantiatable" />
+        <activity
+            android:name=".Surat.SKTM"
+            android:exported="false" />
+        <activity
+            android:name=".Surat.Surat_Ijin"
+            android:exported="false" />
+        <activity
+            android:name=".Asset.RiwayatSurat.SuratDiajukan"
+            android:exported="false"
+            tools:ignore="Instantiatable" />
+        <activity
+            android:name=".Surat.SKCK"
+            android:exported="false" />
+        <activity
+            android:name=".Menu.detail_permintaan_surat"
+            android:exported="false" />
+        <activity
+            android:name=".Menu.permintaan_surat"
+            android:exported="false" />
+        <activity
+            android:name=".Asset.Adapter.AdapterNotifikasi"
+            android:exported="false"
+            tools:ignore="Instantiatable" />
+        <activity
+            android:name=".Menu.dashboard"
+            android:exported="false"
+            tools:ignore="Instantiatable" />
+        <activity
+            android:name=".Login.register3"
+            android:exported="false" />
+        <activity
+            android:name=".Login.register2"
+            android:exported="false" />
+        <activity
+            android:name=".menu"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".Login.register1"
+            android:exported="false" />
+        <activity
+            android:name=".Login.lupa_password_2"
+            android:exported="false" />
+        <activity
+            android:name=".Login.lupa_password"
+            android:exported="false" />
+        <activity
+            android:name=".Login.login"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "17751188767",
+    "project_id": "elades-1934d",
+    "storage_bucket": "elades-1934d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:17751188767:android:474a5de15b43d447eefc2a",
+        "android_client_info": {
+          "package_name": "com.ELayang.Desa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "17751188767-tf4gmigh0b42bbg2fa2ej54qms8dmkeg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDLDzHfuL96q1HjSqUCIQZMnBxX5IlTlPI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "17751188767-tf4gmigh0b42bbg2fa2ej54qms8dmkeg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
