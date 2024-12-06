@@ -1,5 +1,7 @@
 package com.ELayang.Desa.Menu;
 
+import static com.ELayang.Desa.API.RetroServer.API_IMAGE;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,8 +20,12 @@ import android.widget.Toast;
 
 import com.ELayang.Desa.API.APIRequestData;
 import com.ELayang.Desa.API.RetroServer;
+import com.ELayang.Desa.DataModel.Akun.ModelLogin;
 import com.ELayang.Desa.DataModel.Akun.ResponUpdate;
 import com.ELayang.Desa.R;
+import com.bumptech.glide.Glide;
+
+import java.io.File;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,10 +35,9 @@ public class ganti_password extends AppCompatActivity {
     EditText password1, password2;
     Button simpan;
     private boolean isPasswordVisible = true;
-    private ImageView ikon;
+    private ImageView foto;
     private String KEY_NAME = "NAMA";
     private String password;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,12 +46,33 @@ public class ganti_password extends AppCompatActivity {
 
         password1 = findViewById(R.id.e_password1);
         password2 = findViewById(R.id.e_password2);
+        foto = findViewById(R.id.ikon);
 
         SharedPreferences sharedPreferences = getSharedPreferences("prefLogin", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
+        ModelLogin api_image1 = new ModelLogin();
+        api_image1.getAPI_IMAGE();
+        String api_image = API_IMAGE+api_image1;
+        RetroServer image = new RetroServer();
+
         String username = sharedPreferences.getString("username", "");
         String password = sharedPreferences.getString("password", "");
+        String savedImagePath = sharedPreferences.getString("profile_image", "");
+
+        Log.d("savedImagePath", "onCreate: "+savedImagePath);
+        File imgFile = new File(savedImagePath);
+        Log.d("imgFile", "onCreate: "+imgFile);
+        if ( imgFile != null) {
+            Log.d("getUrlImage", "onCreate: "+image.getUrlImage()+imgFile);
+            Glide.with(this)
+                    .load(image.getUrlImage()+imgFile) // Path gambar yang disimpan
+                    .placeholder(R.drawable.akun_profil)
+                    .circleCrop()// Placeholder jika gambar tidak ada
+                    .into(foto);
+        }
+
+        Log.d("api_image", "onCreateView: "+api_image);
 
         // Menyembunyikan password dengan PasswordTransformationMethod
         password1.setTransformationMethod(PasswordTransformationMethod.getInstance());
@@ -54,7 +80,6 @@ public class ganti_password extends AppCompatActivity {
 
         simpan = findViewById(R.id.simpan);
         simpan.setOnClickListener(v -> {
-
             if (password1.getText().toString().isEmpty()) {
                 password1.setError("Password Harus Diisi");
                 password1.requestFocus();
@@ -73,13 +98,11 @@ public class ganti_password extends AppCompatActivity {
                         .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-
                                 APIRequestData apiRequestData = RetroServer.konekRetrofit().create(APIRequestData.class);
                                 Call<ResponUpdate> call = apiRequestData.update_akun(username,sharedPreferences.getString("email", ""),
                                         password2.getText().toString(), sharedPreferences.getString("nama", ""));
                                 Log.d("DEBUG", "Password1: " + password1.getText().toString());
                                 Log.d("DEBUG", "Password2: " + password2.getText().toString());
-
                                 call.enqueue(new Callback<ResponUpdate>() {
                                     @Override
                                     public void onResponse(Call<ResponUpdate> call, Response<ResponUpdate> response) {
@@ -94,7 +117,6 @@ public class ganti_password extends AppCompatActivity {
                                             Toast.makeText(ganti_password.this, "Password Gagal Diupdate", Toast.LENGTH_SHORT).show();
                                         }
                                     }
-
                                     @Override
                                     public void onFailure(Call<ResponUpdate> call, Throwable t) {
                                         Toast.makeText(ganti_password.this, t.getMessage(), Toast.LENGTH_SHORT).show();
@@ -104,7 +126,6 @@ public class ganti_password extends AppCompatActivity {
                         })
                         .setNegativeButton ("Tidak", null)
                         .show();
-
             }
         });
     }
@@ -114,7 +135,6 @@ public class ganti_password extends AppCompatActivity {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             Toast.makeText(this, "gunakan tombol kembali yang ada di atas", Toast.LENGTH_SHORT).show();
             return true;
-
         }
         return super.onKeyDown(keyCode, event);
     }
@@ -122,25 +142,4 @@ public class ganti_password extends AppCompatActivity {
     public void kembali(View view) {
         finish();
     }
-//
-//    private void togglePasswordVisibility(EditText editText) {
-//        // Toggle antara menampilkan dan menyembunyikan password
-//
-//        editText.setTransformationMethod(isPasswordVisible ?
-//                null : PasswordTransformationMethod.getInstance());
-//
-//        // Set jenis input berdasarkan kondisi
-//        editText.setInputType(isPasswordVisible ?
-//                android.text.InputType.TYPE_CLASS_TEXT :
-//                android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
-//
-//        // Mengatur teks tombol berdasarkan keadaan password
-//        show.setText(isPasswordVisible ? "Sembunyikan Password" : "Lihat Password");
-//
-//    }
-//
-//    private boolean reset(){
-//        isPasswordVisible = !isPasswordVisible;
-//        return isPasswordVisible;
-//    }
 }

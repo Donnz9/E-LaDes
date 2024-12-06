@@ -43,19 +43,37 @@ public interface APIRequestData {
     @GET("surat.php")
     Call<ResponSurat> surat();
 
-    @FormUrlEncoded
+
+//    @FormUrlEncoded
+//    @POST("surat/skck.php")
+//    Call<ResponSkck> skck(
+//            @Field("nama") String nama,
+//            @Field("nik") String nik,
+//            @Field("tempat_tanggal_lahir") String tempat_tanggal_lahir,
+//            @Field("kebangsaan") String kebangsaan,
+//            @Field("agama") String agama,
+//            @Field("status_perkawinan") String status,
+//            @Field("pekerjaan") String pekerjaan,
+//            @Field("tempat_tinggal") String tinggal,
+//            @Field("username") String username,
+//            @Field("jenis_kelamin") String jenis_kelamin
+//    );
+
+    @Multipart
     @POST("surat/skck.php")
-    Call<ResponSkck> skck(
-            @Field("nama") String nama,
-            @Field("nik") String nik,
-            @Field("tempat_tanggal_lahir") String tempat_tanggal_lahir,
-            @Field("kebangsaan") String kebangsaan,
-            @Field("agama") String agama,
-            @Field("status_perkawinan") String status,
-            @Field("pekerjaan") String pekerjaan,
-            @Field("tempat_tinggal") String tinggal,
-            @Field("username") String username,
-            @Field("jenis_kelamin") String jenis_kelamin
+    Call<ResponSkck> uploadFile(
+            @Part("nama") RequestBody nama,
+            @Part("nik") RequestBody nik,
+            @Part("tempat_tanggal_lahir") RequestBody tempat_tanggal_lahir,
+            @Part("kebangsaan") RequestBody kebangsaan,
+            @Part("agama") RequestBody agama,
+            @Part("status_perkawinan") RequestBody status,
+            @Part("pekerjaan") RequestBody pekerjaan,
+            @Part("tempat_tinggal") RequestBody tempatTinggal,
+//            @Part("username") String username,
+            @Part("username") RequestBody username,
+            @Part("jenis_kelamin") RequestBody jenis_kelamin,
+            @Part MultipartBody.Part file
     );
 
     @FormUrlEncoded
@@ -114,46 +132,90 @@ public interface APIRequestData {
             @Field("username") String username
     );
 
-    @FormUrlEncoded
+//    @FormUrlEncoded
+//    @POST("surat/surat_ijin.php")
+//    Call<ResponSuratijin> suratijin(
+//            @Field("username") String username,
+//            @Field("nama") String Nama,
+//            @Field("nik") String NIK,
+//            @Field("jenis_kelamin") String Jenis_kelamin,
+//            @Field("tempat_tanggal_lahir") String Tempat_tanggal_lahir,
+//            @Field("kewarganegaraan") String Kewarganegaraan,
+//            @Field("agama") String Agama,
+//            @Field("pekerjaan") String Pekerjaan,
+//            @Field("alamat") String Alamat,
+//            @Field("aempat_kerja") String Tempat_Kerja,
+//            @Field("bagian") String Bagian,
+//            @Field("tanggal") String Tanggal,
+//            @Field("alasan") String Alasan
+//    );
+
+    @Multipart
     @POST("surat/surat_ijin.php")
     Call<ResponSuratijin> suratijin(
-            @Field("username") String username,
-            @Field("nama") String Nama,
-            @Field("nik") String NIK,
-            @Field("jenis_kelamin") String Jenis_kelamin,
-            @Field("tempat_tanggal_lahir") String Tempat_tanggal_lahir,
-            @Field("kewarganegaraan") String Kewarganegaraan,
-            @Field("agama") String Agama,
-            @Field("pekerjaan") String Pekerjaan,
-            @Field("alamat") String Alamat,
-            @Field("aempat_kerja") String Tempat_Kerja,
-            @Field("bagian") String Bagian,
-            @Field("tanggal") String Tanggal,
-            @Field("alasan") String Alasan
+            @Part("username") RequestBody username,
+            @Part("nama") RequestBody nama,
+            @Part("nik") RequestBody nik,
+            @Part("jenis_kelamin") RequestBody jenis_kelamin,
+            @Part("tempat_tanggal_lahir") RequestBody tempat_tanggal_lahir,
+            @Part("kewarganegaraan") RequestBody Kewarganegaraan,
+            @Part("agama") RequestBody Agama,
+            @Part("pekerjaan") RequestBody Pekerjaan,
+            @Part("alamat") RequestBody Alamat,
+            @Part("tempat_kerja") RequestBody Tempat_Kerja,
+            @Part("bagian") RequestBody Bagian,
+            @Part("tanggal") RequestBody Tanggal,
+            @Part("alasan") RequestBody Alasan,
+            @Part MultipartBody.Part file
     );
 
-    @FormUrlEncoded
+//    @FormUrlEncoded
+//    @POST("surat/sktm.php")
+//    Call<ResponSktm> sktm(
+//            @Field("username") String username,
+//            //bapak
+//            @Field("nama_bapak") String nama_bapak,
+//            @Field("tempat_tanggal_lahir_bapak") String tempat_tanggal_lahir_bapak,
+//            @Field("pekerjaan_bapak") String pekerjaan_bapak,
+//            @Field("alamat_bapak") String alamat_bapak,
+//
+//            //ibu
+//            @Field("nama_ibu") String nama_ibu,
+//            @Field("tempat_tanggal_lahir_ibu") String tempat_tanggal_lahir_ibu,
+//            @Field("pekerjaan_ibu") String pekerjaan_ibu,
+//            @Field("alamat_ibu") String alamat_ibu,
+//
+//            //anak
+//            @Field("nama") String nama_anak,
+//            @Field("tempat_tanggal_lahir_anak") String tempat_tanggal_lahir_anak,
+//            @Field("jenis_kelamin_anak") String jenis_kelamin_anak,
+//            @Field("alamat") String alamat_anak
+//
+//    );
+
+    @Multipart
     @POST("surat/sktm.php")
     Call<ResponSktm> sktm(
-            @Field("username") String username,
+            @Part("username") RequestBody username,
+
             //bapak
-            @Field("nama_bapak") String nama_bapak,
-            @Field("tempat_tanggal_lahir_bapak") String tempat_tanggal_lahir_bapak,
-            @Field("pekerjaan_bapak") String pekerjaan_bapak,
-            @Field("alamat_bapak") String alamat_bapak,
+            @Part("nama_bapak") RequestBody nama_bapak,
+            @Part("tempat_tanggal_lahir_bapak") RequestBody tempat_tanggal_lahir_bapak,
+            @Part("pekerjaan_bapak") RequestBody pekerjaan_bapak,
+            @Part("alamat_bapak") RequestBody alamat_bapak,
 
             //ibu
-            @Field("nama_ibu") String nama_ibu,
-            @Field("tempat_tanggal_lahir_ibu") String tempat_tanggal_lahir_ibu,
-            @Field("pekerjaan_ibu") String pekerjaan_ibu,
-            @Field("alamat_ibu") String alamat_ibu,
+            @Part("nama_ibu") RequestBody nama_ibu,
+            @Part("tempat_tanggal_lahir_ibu") RequestBody tempat_tanggal_lahir_ibu,
+            @Part("pekerjaan_ibu") RequestBody pekerjaan_ibu,
+            @Part("alamat_ibu") RequestBody alamat_ibu,
 
             //anak
-            @Field("nama") String nama_anak,
-            @Field("tempat_tanggal_lahir_anak") String tempat_tanggal_lahir_anak,
-            @Field("jenis_kelamin_anak") String jenis_kelamin_anak,
-            @Field("alamat") String alamat_anak
-
+            @Part("nama") RequestBody nama_anak,
+            @Part("tempat_tanggal_lahir_anak") RequestBody tempat_tanggal_lahir_anak,
+            @Part("jenis_kelamin_anak") RequestBody jenis_kelamin_anak,
+            @Part("alamat") RequestBody alamat,
+            @Part MultipartBody.Part file
     );
 
     @FormUrlEncoded
@@ -276,5 +338,3 @@ public interface APIRequestData {
             @Field("username") String username
     );
 };
-
-

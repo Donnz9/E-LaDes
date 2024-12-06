@@ -8,7 +8,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -17,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ELayang.Desa.API.APIRequestData;
@@ -29,17 +33,25 @@ import com.ELayang.Desa.R;
 
 import org.chromium.base.Log;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class Surat_Ijin extends AppCompatActivity {
-
+    private static final int PICK_FILE_REQUEST_CODE = 1;
     DatePickerDialog picker;
     String selectedGender;
 
@@ -71,7 +83,7 @@ public class Surat_Ijin extends AppCompatActivity {
         bagian = findViewById(R.id.e_bagian);
         tanggal = findViewById(R.id.e_tanggal_bawah);
         alasan = findViewById(R.id.e_alasan);
-
+        TextView namafile = findViewById(R.id.t_file_name);
         spinnerGender = findViewById(R.id.e_jenis);
 
         tanggal.setFocusableInTouchMode(false);
@@ -107,6 +119,7 @@ public class Surat_Ijin extends AppCompatActivity {
         });
          kirim = findViewById(R.id.kirim);
          update = findViewById(R.id.update);
+         Button btnChooseFile = findViewById(R.id.btn_choose_file);
 
         String[] genderOptions = getResources().getStringArray(R.array.jenis_kelamin_array);
 
@@ -262,23 +275,66 @@ public class Surat_Ijin extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int which) {
                                 String tempat_tanggal_lahir = tempat_tgl_lahir.getText() + ", " + tgl_lahir.getText();
 
+//                                APIRequestData apiRequestData = RetroServer.konekRetrofit().create(APIRequestData.class);
+//                                Call<ResponSuratijin> call = apiRequestData.suratijin(username, nama.getText().toString(),
+//                                        nik.getText().toString(), selectedGender, tempat_tanggal_lahir, kewarganegaraan.getText().toString(),
+//                                        agama.getText().toString(), pekerjaan.getText().toString(), alamat.getText().toString(),
+//                                        tempat_kerja.getText().toString(), bagian.getText().toString(), tanggal.getText().toString(),
+//                                        alasan.getText().toString());
+
+                                // Convert data to RequestBody
+                                RequestBody namaRequestBody = RequestBody.create(MediaType.parse("text/plain"), nama.getText().toString());
+                                RequestBody nikRequestBody = RequestBody.create(MediaType.parse("text/plain"), nik.getText().toString());
+                                RequestBody tempatTanggalLahirRequestBody = RequestBody.create(MediaType.parse("text/plain"), tempat_tanggal_lahir);
+                                RequestBody kewarganegaraanRequestBody = RequestBody.create(MediaType.parse("text/plain"), kewarganegaraan.getText().toString());
+                                RequestBody agamaRequestBody = RequestBody.create(MediaType.parse("text/plain"), agama.getText().toString());
+                                RequestBody pekerjaanRequestBody = RequestBody.create(MediaType.parse("text/plain"), pekerjaan.getText().toString());
+                                RequestBody alamatRequestBody = RequestBody.create(MediaType.parse("text/plain"), alamat.getText().toString());
+                                RequestBody usernameRequestBody = RequestBody.create(MediaType.parse("text/plain"), username);
+                                RequestBody jenis_kelaminRequestBody = RequestBody.create(MediaType.parse("text/plain"), selectedGender);
+                                RequestBody tempat_kerjaRequestBody = RequestBody.create(MediaType.parse("text/plain"), tempat_kerja.getText().toString());
+                                RequestBody bagianRequestBody = RequestBody.create(MediaType.parse("text/plain"), bagian.getText().toString());
+                                RequestBody tanggalRequestBody = RequestBody.create(MediaType.parse("text/plain"), tanggal.getText().toString());
+                                RequestBody alasanRequestBody = RequestBody.create(MediaType.parse("text/plain"), alasan.getText().toString());
+
+                                // Jika file dipilih, masukkan file ke dalam permintaan
+                                MultipartBody.Part filePart = null;
+                                if (namafile.getText().length() > 0) {
+                                    // Menyiapkan file untuk di-upload
+                                    File file = new File(getFilesDir(), namafile.getText().toString()); // Path of file
+                                    RequestBody fileRequestBody = RequestBody.create(MediaType.parse("application/octet-stream"), file);
+                                    filePart = MultipartBody.Part.createFormData("file", file.getName(), fileRequestBody);
+                                }
+
+                                // Call Retrofit APIRequestData to upload
                                 APIRequestData apiRequestData = RetroServer.konekRetrofit().create(APIRequestData.class);
-                                Call<ResponSuratijin> call = apiRequestData.suratijin(username, nama.getText().toString(),
-                                        nik.getText().toString(), selectedGender, tempat_tanggal_lahir, kewarganegaraan.getText().toString(),
-                                        agama.getText().toString(), pekerjaan.getText().toString(), alamat.getText().toString(),
-                                        tempat_kerja.getText().toString(), bagian.getText().toString(), tanggal.getText().toString(),
-                                        alasan.getText().toString());
+                                Call<ResponSuratijin> suratijin = apiRequestData.suratijin(usernameRequestBody, namaRequestBody, nikRequestBody,
+                                        jenis_kelaminRequestBody, tempatTanggalLahirRequestBody, kewarganegaraanRequestBody, agamaRequestBody, pekerjaanRequestBody,
+                                        alamatRequestBody, tempat_kerjaRequestBody, bagianRequestBody, tanggalRequestBody, alasanRequestBody, filePart);
 
-
-                                call.enqueue(new Callback<ResponSuratijin>() {
+                                suratijin.enqueue(new Callback<ResponSuratijin>() {
                                     @Override
                                     public void onResponse(Call<ResponSuratijin> call, Response<ResponSuratijin> response) {
-                                        ResponSuratijin respon = response.body();
-                                        if (respon.isKode() == true) {
-                                            Toast.makeText(Surat_Ijin.this, "Berhasil Ditambahkan", Toast.LENGTH_SHORT).show();
-                                            finish();
-                                        }else{
-                                            update.setEnabled(true);
+//                                        ResponSuratijin respon = response.body();
+//                                        if (respon.isKode() == true) {
+//                                            Toast.makeText(Surat_Ijin.this, "Berhasil Ditambahkan", Toast.LENGTH_SHORT).show();
+//                                            finish();
+//                                        }else{
+//                                            update.setEnabled(true);
+//                                        }
+                                        if (response.isSuccessful()) {
+                                            ResponSuratijin responSuratijin = response.body();
+                                            if (responSuratijin != null && responSuratijin.isKode()) {
+                                                android.util.Log.d("User Input", "Username: " + username);
+                                                Toast.makeText(Surat_Ijin.this, "berhasil menambahkan", Toast.LENGTH_SHORT).show();
+                                                finish();
+                                            } else {
+                                                Toast.makeText(Surat_Ijin.this, "Gagal mengirim data", Toast.LENGTH_SHORT).show();
+                                                kirim.setEnabled(true);
+                                            }
+                                        } else {
+                                            Toast.makeText(Surat_Ijin.this, "Gagal mengirim data", Toast.LENGTH_SHORT).show();
+                                            kirim.setEnabled(true);
                                         }
                                     }
 
@@ -301,7 +357,85 @@ public class Surat_Ijin extends AppCompatActivity {
                         .show();
             }
         });
+        btnChooseFile.setOnClickListener(v -> {
+            chooseFile();
+        });
+    }
 
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        TextView namafile = findViewById(R.id.t_file_name);
+
+        if (requestCode == PICK_FILE_REQUEST_CODE && resultCode == RESULT_OK) {
+            // Get the URI of the selected file
+            Uri fileUri = data.getData();
+            if (fileUri != null) {
+                String fileName = getFileManager(fileUri);
+                namafile.setText(fileName);
+                android.util.Log.d("File Picker", "File pilih: " + fileUri.toString());
+
+                String savedFilePath = saveFileToInternalStorage(fileUri, fileName);
+                if (savedFilePath != null) {
+                    // Menyimpan path dan nama file ke database
+//                    saveFileMetadataToDatabase(fileName, savedFilePath);
+                }
+            }
+        }
+    }
+
+    private String saveFileToInternalStorage(Uri fileUri, String fileName) {
+        try {
+            // Mengambil input stream dari file yang dipilih
+            InputStream inputStream = getContentResolver().openInputStream(fileUri);
+            File file = new File(getFilesDir(), fileName); // Menyimpan file di direktori internal aplikasi
+            OutputStream outputStream = new FileOutputStream(file);
+
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, length);
+            }
+            inputStream.close();
+            outputStream.close();
+
+            return file.getAbsolutePath(); // Mengembalikan path file yang disalin
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private String getFileManager(Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = null;
+            try {
+                cursor = getContentResolver().query(uri, null, null, null, null);
+                if (cursor != null && cursor.moveToFirst()) {
+                    int columnIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                    if (columnIndex != -1) {
+                        result = cursor.getString(columnIndex);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
+            }
+        }
+
+        // Fallback untuk file uri
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+
+        return result;
     }
 
     @Override
@@ -341,5 +475,12 @@ public class Surat_Ijin extends AppCompatActivity {
     }
     private void reset(){
         hasilCek =true;
+    }
+
+    private void chooseFile() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("*/*");  // Set MIME type to "*/*" to allow any file type
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(intent, PICK_FILE_REQUEST_CODE);
     }
 }

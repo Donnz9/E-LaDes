@@ -31,12 +31,8 @@ import retrofit2.Response;
 
 
 public class riwayat_surat_suratSelesai extends Fragment {
-
     private View view;
-
     ArrayList<ModelSelesai> data = new ArrayList<>();
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -49,7 +45,6 @@ public class riwayat_surat_suratSelesai extends Fragment {
 
         APIRequestData apiRequestData = RetroServer.konekRetrofit().create(APIRequestData.class);
         Call<ResponSelesai> call = apiRequestData.selesai(username);
-
         call.enqueue(new Callback<ResponSelesai>() {
             @Override
             public void onResponse(Call<ResponSelesai> call, Response<ResponSelesai> response) {
@@ -61,7 +56,6 @@ public class riwayat_surat_suratSelesai extends Fragment {
                         // Tambahkan data surat ke ArrayList dan set up RecyclerView
                         ModelSelesai user = response.body().getData().get(0);
                         data.addAll(list);
-
                         SuratSelesai adapter = new SuratSelesai(data);
                         recyclerView.setAdapter(adapter);
                     } else {
@@ -72,7 +66,6 @@ public class riwayat_surat_suratSelesai extends Fragment {
                     Toast.makeText(getContext(), responSelesai.getPesan(), Toast.LENGTH_SHORT).show();
                 }
             }
-
             @Override
             public void onFailure(Call<ResponSelesai> call, Throwable t) {
                 Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();

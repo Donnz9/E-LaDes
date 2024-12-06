@@ -47,7 +47,6 @@ public class riwayat_surat_suratDiajukan extends Fragment {
 
         APIRequestData apiRequestData = RetroServer.konekRetrofit().create(APIRequestData.class);
         Call<ResponDiajukan> call = apiRequestData.proses(username);
-
         call.enqueue(new Callback<ResponDiajukan>() {
             @Override
             public void onResponse(Call<ResponDiajukan> call, Response<ResponDiajukan> response) {
@@ -69,7 +68,6 @@ public class riwayat_surat_suratDiajukan extends Fragment {
                     Toast.makeText(getContext(), responDiajukan.getPesan(), Toast.LENGTH_SHORT).show();
                 }
             }
-
             @Override
             public void onFailure(Call<ResponDiajukan> call, Throwable t) {
                 Log.e("error pada suratDiajukan",t.getMessage());

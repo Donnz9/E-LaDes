@@ -59,30 +59,32 @@ public class edit_profil extends AppCompatActivity {
     private String KEY_NAME = "NAMA";
 
     private File saveImageToInternalStorage(Bitmap bitmap) throws IOException {
-        File directory = getFilesDir();  // Menyimpan di internal storage
-        File file = new File(directory, "profile_image.jpg");  // Nama file gambar
-        FileOutputStream fos = new FileOutputStream(file);
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);  // Simpan sebagai JPEG
-        fos.close();
-        return file;  // Mengembalikan file yang sudah disimpan
+        String fileName = "profile_image_" + System.currentTimeMillis() + ".jpg"; // Nama file unik
+        File file = new File(getCacheDir(), fileName);
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return file;
     }
 
     private void saveImagePathToSharedPreferences(String imagePath) {
         SharedPreferences sharedPreferences = getSharedPreferences("prefLogin", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("profile_image_path", imagePath); // Simpan path absolut
+        editor.putString("profile_image", imagePath); // Simpan path absolut
         editor.apply();
     }
 
-    private Uri loadImageUriFromSharedPreferences() {
-        SharedPreferences sharedPreferences = getSharedPreferences("prefLogin", MODE_PRIVATE);
-        String imagePath = sharedPreferences.getString("profile_image_path", null);
-        return imagePath != null ? Uri.fromFile(new File(imagePath)) : null;
-    }
+//    private Uri loadImageUriFromSharedPreferences() {
+//        SharedPreferences sharedPreferences = getSharedPreferences("prefLogin", MODE_PRIVATE);
+//        String imagePath = sharedPreferences.getString("profile_image_path", null);
+//        return imagePath != null ? Uri.fromFile(new File(imagePath)) : null;
+//    }
 
     private Bitmap loadImageFromSharedPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("prefLogin", MODE_PRIVATE);
-        String imagePath = sharedPreferences.getString("profile_image_path", null);  // Ambil path gambar
+        String imagePath = sharedPreferences.getString("profile_image", "");  // Ambil path gambar
 
         if (imagePath != null) {
             File imgFile = new  File(imagePath);
@@ -92,7 +94,6 @@ public class edit_profil extends AppCompatActivity {
         }
         return null;  // Kembalikan null jika tidak ada gambar yang disimpan
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,22 +120,22 @@ public class edit_profil extends AppCompatActivity {
         nama.setText(sharedPreferences.getString("nama", ""));
         email.setText(sharedPreferences.getString("email", ""));
         usernamee.setText(sharedPreferences.getString("username", ""));
-        Log.d("SHT", "onCreate: "+savedImagePath);
+        Log.d("savedImagePath", "onCreate: "+savedImagePath);
         File imgFile = new File(savedImagePath);
-        Log.d("PSHT", "onCreate: "+imgFile);
+        Log.d("imgFile", "onCreate: "+imgFile);
         if ( imgFile != null) {
-            Log.d("SREPETHEHE", "onCreate: "+image.getUrlImage()+imgFile);
+            Log.d("getUrlImage", "onCreate: "+image.getUrlImage()+imgFile);
             Glide.with(this)
                     .load(image.getUrlImage()+imgFile) // Path gambar yang disimpan
                     .placeholder(R.drawable.akun_profil)
                     .circleCrop()// Placeholder jika gambar tidak ada
+                    .diskCacheStrategy(DiskCacheStrategy.NONE) // Abaikan cache
+                    .skipMemoryCache(true)
                     .into(ikon);
         }
 
         simpan = findViewById(R.id.simpan);
         simpan.setOnClickListener(v -> {
-
-
             if (nama.getText().toString().isEmpty()) {
                 nama.setError("Nama Harus Diisi");
                 nama.requestFocus();
@@ -145,19 +146,17 @@ public class edit_profil extends AppCompatActivity {
                 usernamee.setError("Username Harus Diisi");
                 usernamee.requestFocus();
             }  else {
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setMessage("Apakah kamu yakin ingin melanjutkan?")
                         .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                Log.d("EditProfil", "diklik");
                                 try {
                                     // Memuat gambar dari SharedPreferences
                                     Bitmap savedBitmap = loadImageFromSharedPreferences();
                                     if (savedBitmap != null) {
-//                    // Menampilkan gambar yang disimpan
-//                    ikon.setImageBitmap(savedBitmap);
-
+                                        Log.d("EditProfil", "Bitmap" + savedBitmap);
                                         // Ubah Bitmap menjadi File
                                         File imageFile = convertBitmapToFile(savedBitmap);
 
@@ -178,6 +177,7 @@ public class edit_profil extends AppCompatActivity {
                                         call.enqueue(new Callback<ResponUpdate>() {
                                             @Override
                                             public void onResponse(Call<ResponUpdate> call, Response<ResponUpdate> response) {
+                                                Log.d("EditProfil", "API respon: " + response.body().isKode());
                                                 if (response.body().isKode()) {
                                                     SharedPreferences sharedPreferences = getSharedPreferences("prefLogin", MODE_PRIVATE);
                                                     SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -188,7 +188,9 @@ public class edit_profil extends AppCompatActivity {
                                                     editor.putString("password", password);
                                                     editor.putString("profile_image",imageFile.getName());
                                                     editor.apply();
+                                                    reloadSharedPreferencesData();
                                                     Toast.makeText(edit_profil.this, "Akun Berhasil Diupdate", Toast.LENGTH_SHORT).show();
+//                                                    finish();
                                                 } else {
                                                     Toast.makeText(edit_profil.this, "Akun Gagal Diupdate", Toast.LENGTH_SHORT).show();
                                                 }
@@ -196,37 +198,18 @@ public class edit_profil extends AppCompatActivity {
 
                                             @Override
                                             public void onFailure(Call<ResponUpdate> call, Throwable t) {
+                                                Log.e("EditProfil", "API request failed", t);
                                                 Toast.makeText(edit_profil.this, "Terjadi kesalahan: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                                             }
                                         });
+                                    } else {
+                                        Log.e("EditProfil", "Saved bitmap e null");
+                                        Toast.makeText(edit_profil.this, "Gagal memuat gambar", Toast.LENGTH_SHORT).show();
                                     }
                                 } catch (Exception e) {
                                     e.printStackTrace();
+                                    Log.e("EditProfil", "Error proses update", e);
                                 }
-//                                APIRequestData apiRequestData = RetroServer.konekRetrofit().create(APIRequestData.class);
-//                                Call<ResponUpdate> call = apiRequestData.update_akun(username, email.getText().toString(), password, nama.getText().toString());
-//
-//                                call.enqueue(new Callback<ResponUpdate>() {
-//                                    @Override
-//                                    public void onResponse(Call<ResponUpdate> call, Response<ResponUpdate> response) {
-//                                        if (response.body().isKode() == true) {
-//                                            editor.putString("username", usernamee.getText().toString());
-//                                            editor.putString("email", email.getText().toString());
-//                                            editor.putString("nama", nama.getText().toString());
-//                                            editor.apply();
-//                                            finish();
-//
-//                                            Toast.makeText(edit_profil.this, "Akun Berhasil Diupdate", Toast.LENGTH_SHORT).show();
-//                                        } else {
-//                                            Toast.makeText(edit_profil.this, "Akun Gagal Diupdate", Toast.LENGTH_SHORT).show();
-//                                        }
-//                                    }
-//
-//                                    @Override
-//                                    public void onFailure(Call<ResponUpdate> call, Throwable t) {
-//                                        Toast.makeText(edit_profil.this, t.getMessage(), Toast.LENGTH_SHORT).show();
-//                                    }
-//                                });
                             }
                         })
                         .setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
@@ -322,8 +305,36 @@ public class edit_profil extends AppCompatActivity {
             try {
                 if (requestCode == GALLERY_REQUEST_CODE) {
                     imageUri = data.getData();  // Ambil URI dari galeri
-                    String realPath = getRealPathFromURI(imageUri);  // Konversi URI ke path absolut
-                    imageUri = Uri.parse(realPath);
+//                    String realPath = getRealPathFromURI(imageUri);  // Konversi URI ke path absolut
+//                    imageUri = Uri.parse(realPath);
+                    if (imageUri != null) {
+                        try {
+                            // Mengambil gambar dari URI menggunakan ContentResolver
+                            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+
+                            // Menyimpan gambar ke penyimpanan internal seperti foto kamera
+                            File savedFile = saveImageToInternalStorage(bitmap);
+                            imageUri = Uri.fromFile(savedFile);
+
+                            // Menampilkan gambar pada ikon setelah diproses
+                            Bitmap circularBitmap = getCircularBitmap(bitmap);
+                            Glide.with(this)
+                                    .load(circularBitmap)
+                                    .placeholder(R.drawable.akun_profil)
+                                    .error(R.drawable.ic_launcher_foreground)
+                                    .circleCrop()
+                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                    .skipMemoryCache(true)
+                                    .into(ikon);
+
+                            // Simpan path ke SharedPreferences
+                            saveImagePathToSharedPreferences(imageUri.getPath());
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            Toast.makeText(this, "Gagal memuat gambar", Toast.LENGTH_SHORT).show();
+                        }
+                    }
                 } else if (requestCode == CAMERA_REQUEST_CODE) {
                     // Dapatkan foto dari kamera
                     Bitmap photo = (Bitmap) data.getExtras().get("data");
@@ -412,4 +423,26 @@ public class edit_profil extends AppCompatActivity {
         return file;
     }
 
+    private void reloadSharedPreferencesData() {
+        SharedPreferences sharedPreferences = getSharedPreferences("prefLogin", MODE_PRIVATE);
+
+        // Update UI dengan data terbaru
+        nama.setText(sharedPreferences.getString("nama", ""));
+        email.setText(sharedPreferences.getString("email", ""));
+        usernamee.setText(sharedPreferences.getString("username", ""));
+
+        String savedImagePath = sharedPreferences.getString("profile_image", "");
+        File imgFile = new File(savedImagePath);
+
+        Log.d("REFRESH ", "reloadSharedPreferencesData: " + imgFile);
+        if (imgFile.exists()) {
+            Glide.with(this)
+                    .load(savedImagePath)
+                    .placeholder(R.drawable.akun_profil)
+                    .circleCrop()
+                    .diskCacheStrategy(DiskCacheStrategy.NONE) // Abaikan cache
+                    .skipMemoryCache(true)
+                    .into(ikon);
+        }
+    }
 }

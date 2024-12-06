@@ -36,7 +36,7 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 
 public class akun extends Fragment implements GoogleApiClient.OnConnectionFailedListener {
-    TextView nama, email, username;
+    TextView nama, email, usernamee;
     private ImageView foto;
     MaterialButton buka;
     Button keluar;
@@ -50,36 +50,36 @@ public class akun extends Fragment implements GoogleApiClient.OnConnectionFailed
 
         nama = view.findViewById(R.id.masukan_nama);
         email = view.findViewById(R.id.masukan_email);
-        username = view.findViewById(R.id.masukan_username);
+        usernamee = view.findViewById(R.id.masukan_username);
         foto = view.findViewById(R.id.foto_profil);
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("prefLogin", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 //        String fotoPath = sharedPreferences.getString("foto_profil", null);
-
+//
         ModelLogin api_image1 = new ModelLogin();
         api_image1.getAPI_IMAGE();
         String api_image = API_IMAGE+api_image1;
-        if (api_image != null) {
-            Glide.with(this)
-                    .load(api_image) // Path gambar yang disimpan
-                    .placeholder(R.drawable.akun_profil) // Placeholder jika gambar tidak ada
-                    .into(foto); // ImageView tempat menampilkan foto
-        }
-        if (api_image == null) {
-            foto.setImageResource(R.drawable.akun_profil);
-        }
+//        if (api_image != null) {
+//            Glide.with(this)
+//                    .load(api_image) // Path gambar yang disimpan
+//                    .placeholder(R.drawable.akun_profil) // Placeholder jika gambar tidak ada
+//                    .into(foto); // ImageView tempat menampilkan foto
+//        }
+//        if (api_image == null) {
+//            foto.setImageResource(R.drawable.akun_profil);
+//        }
 
         RetroServer image = new RetroServer();
         String username = sharedPreferences.getString("username", "");
         String password = sharedPreferences.getString("password", "");
         String savedImagePath = sharedPreferences.getString("profile_image", "");
 
-        Log.d("SHT", "onCreate: "+savedImagePath);
+        Log.d("savedImagePath", "onCreate: "+savedImagePath);
         File imgFile = new File(savedImagePath);
-        Log.d("PSHT", "onCreate: "+imgFile);
+        Log.d("imgFile", "onCreate: "+imgFile);
         if ( imgFile != null) {
-            Log.d("SREPETHEHE", "onCreate: "+image.getUrlImage()+imgFile);
+            Log.d("getUrlImage", "onCreate: "+image.getUrlImage()+imgFile);
             Glide.with(this)
                     .load(image.getUrlImage()+imgFile) // Path gambar yang disimpan
                     .placeholder(R.drawable.akun_profil)
@@ -87,11 +87,10 @@ public class akun extends Fragment implements GoogleApiClient.OnConnectionFailed
                     .into(foto);
         }
 
-        Log.d("LOSH", "onCreateView: "+api_image);
+        Log.d("api_image", "onCreateView: "+api_image);
         nama.setText(sharedPreferences.getString("nama", ""));
         email.setText(sharedPreferences.getString("email", ""));
-
-
+        usernamee.setText(sharedPreferences.getString("username", ""));
 
         keluar = view.findViewById(R.id.logout);
         keluar.setOnClickListener(v -> {
@@ -99,8 +98,6 @@ public class akun extends Fragment implements GoogleApiClient.OnConnectionFailed
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             builder.setTitle("Konfirmasi Keluar");
             builder.setMessage("Apakah anda yakin ingin keluar?");
-
-            // Tombol Ya
             builder.setPositiveButton("Ya", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -111,16 +108,12 @@ public class akun extends Fragment implements GoogleApiClient.OnConnectionFailed
                     getActivity().finish();
                 }
             });
-
-            // Tombol Tidak
             builder.setNegativeButton("Tidak", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
                 }
             });
-
-            // Menampilkan dialog
             AlertDialog dialog = builder.create();
             dialog.show();
 
@@ -137,8 +130,6 @@ public class akun extends Fragment implements GoogleApiClient.OnConnectionFailed
         // Inflate the layout for this fragment
         return view;
     }
-
-
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {

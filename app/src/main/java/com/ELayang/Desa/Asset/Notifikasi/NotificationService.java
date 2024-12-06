@@ -134,7 +134,6 @@ public class NotificationService extends JobIntentService {
         });
     }
 
-
     private void showNotificationDitolak() {
         if (isNotificationPermissionGranted()) {
             Intent intent = new Intent(this, NotificationService.class);

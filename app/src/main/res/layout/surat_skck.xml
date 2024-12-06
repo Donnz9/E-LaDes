@@ -43,7 +43,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="SURAT KETERANGAN CATATAN KEPOLISIAN"
+            android:text="SURAT PENGANTAR SKCK"
             android:textAlignment="center"
             android:textColor="@color/black"
             android:textSize="16dp"
@@ -310,7 +310,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:background="@drawable/esurat"
-                    android:hint="Desa dan k\Kecamatan"
+                    android:hint="Desa dan Kecamatan"
                     android:inputType="text"
                     android:lines="1"
                     android:maxLines="3" />
@@ -337,16 +337,17 @@
                     android:layout_height="50dp"
                     android:background="@drawable/esurat"
                     android:onClick="chooseFile"
-                    android:text="Pilih File" />
+                    android:text="Pilih File"
+                    tools:ignore="OnClick" />
 
                 <TextView
                     android:id="@+id/t_file_name"
-                    android:layout_width="match_parent"
+                    android:layout_width="377dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
                     android:text=""
                     android:textColor="@color/black"
-                    android:textSize="14dp"
-                    android:layout_marginTop="5dp"/>
+                    android:textSize="14dp" />
 
             </LinearLayout>
 

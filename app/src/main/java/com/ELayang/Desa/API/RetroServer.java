@@ -6,7 +6,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetroServer {
-    public static String server = "192.168.137.10";
+    public static String server = "192.168.1.113";
 //    private static final String baseURL = "http://" + server + "/coding/ELaDes%20WEB/DatabaseMobile/";
     private static final String finalurl = "http://" + server + "/elades/DatabaseMobile/";
     public static final String API_IMAGE ="http://" + server + "/elades/uploads/";
@@ -16,8 +16,7 @@ public class RetroServer {
         return API_IMAGE;
     }
     public static Retrofit konekRetrofit() {
-        if (retro == null) {  
-
+        if (retro == null) {
             // Tambahkan logging interceptor
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
             loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);

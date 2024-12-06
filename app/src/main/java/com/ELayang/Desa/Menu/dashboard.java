@@ -119,7 +119,6 @@ public class dashboard extends Fragment {
         //status
         APIRequestData apiRequestData = RetroServer.konekRetrofit().create(APIRequestData.class);
         Call<StatusDasboardRespon> call = apiRequestData.dashboard(username);
-
         call.enqueue(new Callback<StatusDasboardRespon>() {
             @Override
             public void onResponse(Call<StatusDasboardRespon> call, Response<StatusDasboardRespon> response) {
@@ -140,7 +139,6 @@ public class dashboard extends Fragment {
                     }else{
                         masuk.setText("0");
                     }
-
                 } else {
                     selesai.setText("0");
                     tolak.setText("0");
@@ -165,7 +163,6 @@ public class dashboard extends Fragment {
         // Mulai otomatis bergulir ketika aktivitas di-resume
         startAutoScroll();
     }
-
 
     @Override
     public void onPause() {

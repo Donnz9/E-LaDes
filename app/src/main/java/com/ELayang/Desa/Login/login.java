@@ -135,6 +135,7 @@
                                     editor.putString("kode_otp", user.getKode_otp());
                                     editor.putString("profile_image", user.getAPI_IMAGE());
                                     editor.apply();
+                                    Log.e("pue", "profil: " + user.getAPI_IMAGE());
                                     Intent pindah = new Intent(login.this, menu.class);
                                     startActivity(pindah);
                                     finish();

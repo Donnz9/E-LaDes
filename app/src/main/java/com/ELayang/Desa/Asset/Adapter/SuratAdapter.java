@@ -82,7 +82,6 @@ public class SuratAdapter extends RecyclerView.Adapter<SuratAdapter.RecycleViewH
     public class RecycleViewHolder extends RecyclerView.ViewHolder {
         private TextView nama, keterangan;
         private ImageView icon;
-
         public RecycleViewHolder(View view) {
             super(view);
             nama = view.findViewById(R.id.textsatu);

@@ -481,12 +481,12 @@
 
                 <TextView
                     android:id="@+id/t_file_name"
-                    android:layout_width="match_parent"
+                    android:layout_width="377dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
                     android:text=""
                     android:textColor="@color/black"
-                    android:textSize="14dp"
-                    android:layout_marginTop="5dp"/>
+                    android:textSize="14dp" />
 
             </LinearLayout>
 

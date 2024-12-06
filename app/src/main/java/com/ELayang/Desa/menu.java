@@ -49,38 +49,32 @@ public class menu extends AppCompatActivity {
         NotificationService.enqueueWork(this, serviceIntent);
 
         bottomNavigationView = findViewById(R.id.bottomNavView);
-
-// Untuk menghilangkan shadow, kita dapat menggunakan method setElevation dengan nilai 0dp
         bottomNavigationView.setElevation(0);
         bottomNavigationView.getMenu().findItem(R.id.permintaan).setEnabled(false);
-
         bottomNavigationView = findViewById(R.id.bottomNavView);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Fragment selectedFragment = null;
-
                 if (item.getItemId() == R.id.dashboard) {
                     selectedFragment = new dashboard();
                 }else if (item.getItemId() == R.id.notifikasi) {
                     selectedFragment = new Notifikasi();
                 }
-
                 else if (item.getItemId() == R.id.riwayat) {
                     selectedFragment = new riwayat_surat();
                 }else if (item.getItemId() == R.id.profil) {
                     selectedFragment = new akun();
                 }
-
                 if (selectedFragment != null) {
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.frame, selectedFragment)
                             .commit();
                 }
-
                 return true;
             }
         });
+
         // Set the initial fragment to display
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.frame, new dashboard())
